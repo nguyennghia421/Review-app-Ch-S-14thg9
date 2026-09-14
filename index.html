@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cập nhật App — Mang Yang &amp; Chư Sê</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#152922;
+    --bg-panel:#1d372c;
+    --bg-panel-2:#234436;
+    --accent-gold:#d7ab52;
+    --accent-gold-dim:#a9834a;
+    --accent-leaf:#93b872;
+    --accent-soil:#c17b4a;
+    --text-cream:#f4efe1;
+    --text-muted:#a9bcae;
+    --line:rgba(244,239,225,0.14);
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background:var(--bg-deep);
+    color:var(--text-cream);
+    font-family:var(--sans);
+    overflow:hidden;
+  }
+  .deck{ position:relative; width:100vw; height:100vh; overflow:hidden; }
+  .bgtex{ position:fixed; inset:0; pointer-events:none; opacity:0.5; z-index:0; }
+  .track{ display:flex; height:100%; transition: transform 0.6s cubic-bezier(.65,0,.35,1); position:relative; z-index:1; }
+  .slide{
+    flex:0 0 100vw; height:100vh;
+    padding: 5.5vh 6.5vw 8.5vh 6.5vw;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+  }
+  .slide-inner{ max-width:1240px; width:100%; margin:0 auto; max-height:86vh; overflow-y:auto; }
+  .slide-inner::-webkit-scrollbar{ width:0; }
+
+  .kicker{ font-size:13px; letter-spacing:0.04em; color:var(--accent-gold); font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:10px; }
+  .kicker .num{ font-family:var(--serif); font-size:15px; font-style:italic; color:var(--text-muted); }
+
+  h1.title{ font-family:var(--serif); font-weight:600; font-size:clamp(30px, 4.4vw, 56px); line-height:1.06; margin:0 0 12px 0; letter-spacing:-0.01em; }
+  h2.head{ font-family:var(--serif); font-weight:600; font-size:clamp(23px, 2.7vw, 34px); line-height:1.14; margin:0 0 4px 0; }
+  h3.subhead{ font-family:var(--serif); font-weight:600; font-size:19px; margin:0 0 2px 0; color:var(--accent-gold); }
+  p.sub{ font-size:16px; color:var(--text-muted); max-width:560px; line-height:1.55; margin:0; }
+
+  .drip{ width:150px; height:18px; margin:14px 0 24px 0; display:block; }
+  .drip path{ stroke:var(--accent-gold); stroke-width:2; fill:none; }
+  .drip circle{ fill:var(--accent-gold); }
+  .drip.small{ width:100px; height:14px; margin:8px 0 14px 0; }
+
+  /* title slide */
+  .slide.title-slide{ justify-content:center; }
+  .title-slide .eyebrow{ font-size:14px; color:var(--text-muted); letter-spacing:0.03em; margin-bottom:20px; }
+  .title-slide .meta{ display:flex; gap:28px; margin-top:30px; flex-wrap:wrap; }
+  .meta-item{ font-size:14px; color:var(--text-muted); }
+  .meta-item b{ color:var(--text-cream); font-weight:600; display:block; font-size:15px; margin-bottom:2px; }
+  .leafmark{ position:absolute; right:6vw; top:50%; transform:translateY(-50%); width:min(28vw,320px); opacity:0.9; }
+
+  /* two-column layout for section slides */
+  .cols2{ display:grid; grid-template-columns:1fr 1fr; gap:44px; margin-top:18px; }
+  .col-card{ }
+  .col-card .colhead{ display:flex; align-items:baseline; gap:10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  .col-card .colhead .tag{ font-family:var(--serif); font-style:italic; color:var(--accent-gold); font-size:16px; }
+  .col-card .colhead h3{ font-family:var(--serif); font-weight:600; font-size:19px; margin:0; }
+
+  .mlist{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; }
+  .mlist li{ padding:12px 0; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:flex-start; font-size:14.5px; line-height:1.5; }
+  .mlist li:last-child{ border-bottom:none; }
+  .mlist li .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent-gold); margin-top:7px; flex:0 0 auto; }
+  .mlist li b{ color:var(--accent-gold); font-weight:600; }
+  .mlist li .note{ display:block; margin-top:4px; color:var(--text-muted); font-size:13px; }
+
+  .mtimeline{ display:flex; flex-direction:column; gap:0; }
+  .mtstep{ display:flex; gap:14px; padding:12px 0; }
+  .mtstep .tline{ display:flex; flex-direction:column; align-items:center; width:16px; flex:0 0 auto; }
+  .mtstep .tdot{ width:9px; height:9px; border-radius:50%; background:var(--accent-gold); flex:0 0 auto; margin-top:3px; }
+  .mtstep .tbar{ width:2px; flex:1; background:var(--line); margin-top:4px; }
+  .mtstep:last-child .tbar{ display:none; }
+  .mtstep .tbody h4{ font-size:14.5px; font-weight:600; margin:0 0 3px 0; color:var(--text-cream); }
+  .mtstep .tbody p{ margin:0; color:var(--text-muted); font-size:13px; line-height:1.5; }
+  .mtstep.branch .tdot{ background:var(--accent-soil); }
+  .mtstep.branch .tbody h4{ color:var(--accent-soil); }
+
+  /* stat row (compact donut + bars) for usage slide */
+  .userow{ display:grid; grid-template-columns:1.1fr 1.4fr; gap:44px; margin-top:16px; align-items:start; }
+  .donut-wrap{ position:relative; width:150px; height:150px; flex:0 0 auto; }
+  .donut-wrap .center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .donut-wrap .center .pct{ font-family:var(--serif); font-weight:600; font-size:30px; color:var(--accent-leaf); line-height:1; }
+  .donut-wrap .center .lbl{ font-size:10.5px; color:var(--text-muted); margin-top:3px; text-align:center; }
+  .statblock{ display:flex; gap:26px; align-items:center; }
+  .stat-legend{ display:flex; flex-direction:column; gap:14px; }
+  .stat-legend .row{ display:flex; align-items:center; gap:10px; }
+  .stat-legend .swatch{ width:11px; height:11px; border-radius:3px; flex:0 0 auto; }
+  .stat-legend .row .num{ font-family:var(--serif); font-weight:600; font-size:18px; min-width:56px; }
+  .stat-legend .row .txt{ font-size:12.5px; color:var(--text-muted); }
+
+  .barchart{ display:flex; flex-direction:column; gap:18px; }
+  .barrow .barlabel{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; }
+  .barrow .barlabel .name{ color:var(--text-cream); font-weight:600; }
+  .barrow .barlabel .frac{ color:var(--text-muted); }
+  .bartrack{ height:10px; background:var(--bg-panel); border-radius:2px; overflow:hidden; }
+  .barfill{ height:100%; border-radius:2px; }
+  .barrow .barpct{ font-family:var(--serif); font-size:13px; color:var(--accent-gold); margin-top:5px; font-weight:500; }
+
+  .sectiontag{ font-size:12px; color:var(--text-muted); text-transform:none; margin:22px 0 10px 0; padding-top:14px; border-top:1px solid var(--line); display:flex; align-items:baseline; gap:8px; }
+  .sectiontag .tag{ font-family:var(--serif); font-style:italic; color:var(--accent-gold); font-size:14px; }
+
+  .groups{ display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  .group-card{ background:var(--bg-panel); border:1px solid var(--line); border-radius:2px; padding:16px 18px 14px 18px; }
+  .group-card .ghead{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:2px; }
+  .group-card h3{ font-family:var(--serif); font-weight:600; font-size:16px; margin:0; color:var(--text-cream); }
+  .group-card .ghead .due{ font-size:11px; color:var(--accent-soil); font-weight:600; white-space:nowrap; }
+  .group-card p.gsub{ margin:0 0 10px 0; font-size:12px; color:var(--text-muted); }
+  .group-card ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px; }
+  .group-card ul li{ font-size:12.5px; display:flex; gap:8px; align-items:baseline; border-top:1px solid var(--line); padding-top:7px; }
+  .group-card ul li:first-child{ border-top:none; padding-top:0; }
+  .group-card ul li .kv{ color:var(--accent-gold); font-weight:600; min-width:82px; }
+
+  /* proposals slide */
+  .props{ display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
+  .prop-card{ flex:1 1 300px; min-width:260px; border-top:2px solid var(--accent-gold); padding-top:18px; }
+  .prop-card .pnum{ font-family:var(--serif); font-style:italic; color:var(--accent-gold-dim); font-size:15px; margin-bottom:10px; }
+  .prop-card p{ font-size:15.5px; line-height:1.6; margin:0; color:var(--text-cream); }
+
+  .nav{ position:fixed; bottom:0; left:0; right:0; height:9vh; min-height:64px; display:flex; align-items:center; justify-content:space-between; padding:0 6vw; z-index:5; }
+  .navbtn{ width:42px; height:42px; border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--text-cream); cursor:pointer; display:flex; align-items:center; justify-content:center; transition: border-color .2s, background .2s; font-size:16px; }
+  .navbtn:hover{ border-color:var(--accent-gold); background:rgba(215,171,82,0.08); }
+  .navbtn:disabled{ opacity:0.25; cursor:default; }
+  .navbtn:disabled:hover{ border-color:var(--line); background:transparent; }
+  .dots{ display:flex; gap:9px; }
+  .dots button{ width:7px; height:7px; border-radius:50%; border:none; background:var(--line); cursor:pointer; padding:0; transition: background .2s, transform .2s; }
+  .dots button.active{ background:var(--accent-gold); transform:scale(1.35); }
+  .counter{ font-size:13px; color:var(--text-muted); font-variant-numeric:tabular-nums; }
+
+  @media (max-width:820px){
+    .cols2{ grid-template-columns:1fr; gap:20px; }
+    .userow{ grid-template-columns:1fr; }
+    .groups{ grid-template-columns:1fr; }
+    .leafmark{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<svg class="bgtex" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <pattern id="veins" width="240" height="240" patternUnits="userSpaceOnUse">
+      <path d="M0 120 C 60 60, 120 180, 240 120" stroke="#22392e" stroke-width="1" fill="none"/>
+      <path d="M120 0 C 60 60, 180 120, 120 240" stroke="#1c332a" stroke-width="1" fill="none"/>
+    </pattern>
+    <radialGradient id="vignette" cx="50%" cy="40%" r="75%">
+      <stop offset="0%" stop-color="#152922" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#0d1a15" stop-opacity="0.6"/>
+    </radialGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#veins)"/>
+  <rect width="100%" height="100%" fill="url(#vignette)"/>
+</svg>
+
+<div class="deck">
+  <div class="track" id="track">
+
+    <!-- SLIDE 1 — TITLE -->
+    <section class="slide title-slide">
+      <div class="slide-inner">
+        <div class="eyebrow">Base.vn — Đội dữ liệu &amp; chuyển đổi số</div>
+        <h1 class="title">Cập nhật thiết kế App<br>&amp; tình hình sử dụng</h1>
+        <svg class="drip" viewBox="0 0 190 22"><path d="M2 8 C 40 8, 40 20, 80 20 S 120 8, 160 8"/><circle cx="178" cy="10" r="3.4"/></svg>
+        <p class="sub">Báo cáo tiến độ triển khai app chấm công, sản lượng &amp; DRC — Phòng Mang Yang và Phòng Chư Sê.</p>
+        <div class="meta">
+          <div class="meta-item"><b>Phạm vi</b>Mang Yang · Chư Sê</div>
+          <div class="meta-item"><b>Kỳ báo cáo</b>Tháng 9 / 2026</div>
+          <div class="meta-item"><b>Đầu mối</b>Phòng KSCL — anh Phúc</div>
+        </div>
+      </div>
+      <svg class="leafmark" viewBox="0 0 200 260" fill="none">
+        <path d="M100 10 C 40 60, 20 140, 60 210 C 80 245, 120 245, 140 210 C 180 140, 160 60, 100 10Z" stroke="#93b872" stroke-width="1.4" opacity="0.55"/>
+        <path d="M100 20 L100 235" stroke="#93b872" stroke-width="1.2" opacity="0.45"/>
+        <path d="M100 60 L60 90 M100 60 L140 90 M100 105 L55 135 M100 105 L145 135 M100 150 L60 180 M100 150 L140 180 M100 195 L70 215 M100 195 L130 215" stroke="#93b872" stroke-width="1" opacity="0.4"/>
+      </svg>
+    </section>
+
+    <!-- SLIDE 2 — TÌNH HÌNH THIẾT KẾ APP (gộp 1.1 + 1.2) -->
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker"><span class="num">Phần 01</span></div>
+        <h2 class="head">Tình hình thiết kế App</h2>
+        <svg class="drip" viewBox="0 0 190 22"><path d="M2 8 C 40 8, 40 20, 80 20 S 120 8, 160 8"/><circle cx="178" cy="10" r="3.4"/></svg>
+
+        <div class="cols2">
+          <div class="col-card">
+            <div class="colhead"><span class="tag">1.1</span><h3>App chấm công &amp; sản lượng</h3></div>
+            <ul class="mlist">
+              <li><span class="dot"></span><span>Đã thiết kế xong <b>3 mẫu app</b>, kèm video hướng dẫn sử dụng.</span></li>
+              <li><span class="dot"></span><span>Phòng Mang Yang &amp; Đội sản xuất Ia Hlop: đã tổ chức <b>1 buổi training chi tiết</b>.</span></li>
+            </ul>
+            <div class="mtstep branch" style="margin-top:6px;">
+              <div class="tline"><div class="tdot"></div></div>
+              <div class="tbody"><h4>Phát sinh trường hợp riêng</h4><p>Ghi nhận Đội Ia Lau vận hành khác quy trình chuẩn → cần thiết kế thêm 1 app riêng cho đội này.</p></div>
+            </div>
+          </div>
+
+          <div class="col-card">
+            <div class="colhead"><span class="tag">1.2</span><h3>App DRC</h3></div>
+            <div class="mtimeline">
+              <div class="mtstep">
+                <div class="tline"><div class="tdot"></div><div class="tbar"></div></div>
+                <div class="tbody"><h4>Thiết kế App DRC ver 1</h4><p>Đã hoàn thành bản thiết kế đầu tiên và gửi lại cho phía anh Phúc để rà soát.</p></div>
+              </div>
+              <div class="mtstep">
+                <div class="tline"><div class="tdot"></div></div>
+                <div class="tbody"><h4>Kiểm thử &amp; phản hồi</h4><p>Phòng KSCL (anh Phúc) đang kiểm thử test app và gửi phản hồi hoàn thiện.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 — TÌNH HÌNH SỬ DỤNG APP (gộp 2.1 + 2.2 + 2.3) -->
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker"><span class="num">Phần 02</span></div>
+        <h2 class="head">Tình hình sử dụng App</h2>
+        <svg class="drip" viewBox="0 0 190 22"><path d="M2 8 C 40 8, 40 20, 80 20 S 120 8, 160 8"/><circle cx="178" cy="10" r="3.4"/></svg>
+
+        <div class="userow">
+          <div class="col-card">
+            <div class="colhead"><span class="tag">2.1</span><h3>Toàn hệ thống</h3></div>
+            <div class="statblock">
+              <div class="donut-wrap">
+                <svg width="150" height="150" viewBox="0 0 150 150">
+                  <circle cx="75" cy="75" r="60" fill="none" stroke="#234436" stroke-width="14"/>
+                  <circle cx="75" cy="75" r="60" fill="none" stroke="#93b872" stroke-width="14"
+                    stroke-dasharray="282.7 376.99" stroke-dashoffset="0"
+                    transform="rotate(-90 75 75)" stroke-linecap="butt"/>
+                </svg>
+                <div class="center"><div class="pct">75%</div><div class="lbl">khu vực<br>active</div></div>
+              </div>
+              <div class="stat-legend">
+                <div class="row"><div class="swatch" style="background:var(--accent-leaf)"></div><div class="num">33/44</div><div class="txt">khu vực active (75%)</div></div>
+                <div class="row"><div class="swatch" style="background:var(--bg-panel-2)"></div><div class="num">11/44</div><div class="txt">khu vực chưa active (25%)</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-card">
+            <div class="colhead"><span class="tag">2.2</span><h3>Theo phòng ban</h3></div>
+            <div class="barchart">
+              <div class="barrow">
+                <div class="barlabel"><span class="name">Phòng Mang Yang</span><span class="frac">24 / 28</span></div>
+                <div class="bartrack"><div class="barfill" style="width:85.7%; background:var(--accent-leaf);"></div></div>
+                <div class="barpct">85.7%</div>
+              </div>
+              <div class="barrow">
+                <div class="barlabel"><span class="name">Phòng Chư Sê</span><span class="frac">9 / 16</span></div>
+                <div class="bartrack"><div class="barfill" style="width:56.3%; background:var(--accent-gold);"></div></div>
+                <div class="barpct">56.3%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sectiontag"><span class="tag">2.3</span> Chi tiết các đội chưa active</div>
+        <div class="groups">
+          <div class="group-card">
+            <div class="ghead"><h3>Nhóm 1</h3><span class="due">Bàn giao 5/9</span></div>
+            <p class="gsub">Phòng Mang Yang + Đội Ia Hlop (Chư Sê)</p>
+            <ul>
+              <li><span class="kv">Đội SX 7</span> Khu vực 4</li>
+              <li><span class="kv">Đội SX 11</span> Khu vực 1, 2, 3</li>
+            </ul>
+          </div>
+          <div class="group-card">
+            <div class="ghead"><h3>Nhóm 2</h3><span class="due">Bàn giao 12/9</span></div>
+            <p class="gsub">Phòng Chư Sê</p>
+            <ul>
+              <li><span class="kv">Ia Ko</span> Khu vực 1, 2</li>
+              <li><span class="kv">Ia Tiêm</span> Khu vực 1</li>
+              <li><span class="kv">Ia Glai</span> Khu vực 1, 3, 4, 5</li>
+              <li><span class="kv">Đội Ia Ko</span> Khu vực 1, 2</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 — PROPOSALS -->
+    <section class="slide">
+      <div class="slide-inner">
+        <div class="kicker"><span class="num">03</span> Đề xuất từ Base</div>
+        <h2 class="head">Đề xuất tiếp theo</h2>
+        <svg class="drip" viewBox="0 0 190 22"><path d="M2 8 C 40 8, 40 20, 80 20 S 120 8, 160 8"/><circle cx="178" cy="10" r="3.4"/></svg>
+        <div class="props">
+          <div class="prop-card">
+            <div class="pnum">01</div>
+            <p>Phòng KSCL kiểm thử và chốt form app sớm, để không kéo dài tiến độ bàn giao cho các đội còn lại.</p>
+          </div>
+          <div class="prop-card">
+            <div class="pnum">02</div>
+            <p>Các đội nhập liệu trực tiếp tại vườn cây trong thời gian đầu, để ghi nhận những phản hồi phù hợp với thực tế vận hành.</p>
+          </div>
+          <div class="prop-card">
+            <div class="pnum">03</div>
+            <p>Phối hợp với phòng Kỹ thuật &amp; phòng Tổ chức để quy định và thống nhất phân quyền dữ liệu giữa các bên.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<div class="nav">
+  <button class="navbtn" id="prevBtn" aria-label="Slide trước">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">01 / 04</span>
+  <button class="navbtn" id="nextBtn" aria-label="Slide sau">›</button>
+</div>
+
+<script>
+  const track = document.getElementById('track');
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let idx = 0;
+
+  const dotsWrap = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    if(i===0) b.classList.add('active');
+    b.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(b);
+  });
+  const dots = dotsWrap.querySelectorAll('button');
+  const counter = document.getElementById('counter');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function render(){
+    track.style.transform = `translateX(-${idx * 100}vw)`;
+    dots.forEach((d,i) => d.classList.toggle('active', i === idx));
+    counter.textContent = `${pad(idx+1)} / ${pad(total)}`;
+    prevBtn.disabled = idx === 0;
+    nextBtn.disabled = idx === total - 1;
+  }
+
+  function goTo(i){
+    idx = Math.max(0, Math.min(total - 1, i));
+    render();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(idx - 1));
+  nextBtn.addEventListener('click', () => goTo(idx + 1));
+
+  window.addEventListener('keydown', (e) => {
+    if(e.key === 'ArrowRight' || e.key === 'PageDown'){ goTo(idx + 1); }
+    if(e.key === 'ArrowLeft' || e.key === 'PageUp'){ goTo(idx - 1); }
+  });
+
+  let touchStartX = null;
+  window.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  window.addEventListener('touchend', (e) => {
+    if(touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 50){ dx < 0 ? goTo(idx+1) : goTo(idx-1); }
+    touchStartX = null;
+  });
+
+  render();
+</script>
+
+</body>
+</html>
